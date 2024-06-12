@@ -97,7 +97,7 @@ end
 
 function M.update_current_task()
   local start_line = vim.fn.line("'<") -- Get the start line of the selection
-  local end_line = vim.fn.line("'>") -- Get the end line of the selection
+  local end_line = vim.fn.line("'>")   -- Get the end line of the selection
   for line_num = start_line, end_line do
     local current_line, line_number = M.utils.get_line(line_num)
     local result, _ = M.utils.add_or_sync_task(current_line, true)
@@ -136,7 +136,7 @@ function M.view_task()
     inserted[v] = false
   end
   for k, v in pairs(task_info) do
-    local loc = find_next_index(k, inserted, md_table) or #md_table + 1 
+    local loc = find_next_index(k, inserted, md_table) or #md_table + 1
     local number_of_lines = 0
     if type(v) == "table" then
       for i, j in ipairs(v) do
@@ -155,8 +155,8 @@ function M.view_task()
         end
         if #j > M._config.view_task_config.total_width - M._config.view_task_config.head_width - 5 then
           row = head
-            .. " | - "
-            .. j:sub(1, M._config.view_task_config.total_width - M._config.view_task_config.head_width - 5)
+              .. " | - "
+              .. j:sub(1, M._config.view_task_config.total_width - M._config.view_task_config.head_width - 5)
           row = row:gsub("$%s+", "")
           table.insert(md_table, loc, row)
           loc = loc + 1
@@ -164,8 +164,8 @@ function M.view_task()
           head = string.rep(" ", M._config.view_task_config.head_width)
           row = nil
           row = head
-            .. " |"
-            .. j:sub(M._config.view_task_config.total_width - M._config.view_task_config.head_width - 4)
+              .. " |"
+              .. j:sub(M._config.view_task_config.total_width - M._config.view_task_config.head_width - 4)
         else
           row = head .. " | - " .. j
         end
@@ -182,11 +182,11 @@ function M.view_task()
       local row = nil
       local head = k .. string.rep(" ", M._config.view_task_config.head_width - #k)
       if
-        type(v) == "string" and #v > M._config.view_task_config.total_width - M._config.view_task_config.head_width - 3
+          type(v) == "string" and #v > M._config.view_task_config.total_width - M._config.view_task_config.head_width - 3
       then
         row = head
-          .. " | "
-          .. v:sub(1, M._config.view_task_config.total_width - M._config.view_task_config.head_width - 3)
+            .. " | "
+            .. v:sub(1, M._config.view_task_config.total_width - M._config.view_task_config.head_width - 3)
         row = row:gsub("$%s+", "")
         table.insert(md_table, loc, row)
         loc = loc + 1
@@ -204,12 +204,12 @@ function M.view_task()
       md_table,
       loc + 1,
       string.rep("-", M._config.view_task_config.head_width + 1)
-        .. "|--"
-        .. string.rep("-", M._config.view_task_config.total_width - M._config.view_task_config.head_width)
+      .. "|--"
+      .. string.rep("-", M._config.view_task_config.total_width - M._config.view_task_config.head_width)
     )
   end
   local popup = M.ui.trigger_hover(md_table, "Task " .. uuid)
-  vim.api.nvim_buf_set_option(popup.bufnr, "filetype", "markdown")
+  vim.api.nvim_buf_set_option(popup.bufnr, "filetype", "norg")
   M.current_winid = popup.winid
   local event = require("nui.utils.autocmd").event
   popup:on(event.BufLeave, function()
@@ -347,7 +347,7 @@ function M.run_task_bulk(args)
     end
     if good_command then
       local start_line = vim.fn.line("'<") -- Get the start line of the selection
-      local end_line = vim.fn.line("'>") -- Get the end line of the selection
+      local end_line = vim.fn.line("'>")   -- Get the end line of the selection
       local results = {}
       for line_num = start_line, end_line do
         local current_line, _ = M.utils.get_line(line_num)
@@ -562,13 +562,13 @@ function M.query_tasks(line_number, query, report)
       end
     end
   end
-  local markdown = M.utils.render_tasks(final)
-  table.insert(markdown, "")
+  local norg = M.utils.render_tasks(final)
+  table.insert(norg, "")
   local no_of_lines = vim.api.nvim_buf_line_count(0)
   if no_of_lines == line_number then
     vim.api.nvim_buf_set_lines(0, no_of_lines, no_of_lines, false, { "" })
   end
-  vim.api.nvim_buf_set_lines(0, line_number + 1, line_number + 1, false, markdown)
+  vim.api.nvim_buf_set_lines(0, line_number + 1, line_number + 1, false, norg)
 end
 
 function M.query_tasks_in_buffer()
@@ -631,7 +631,7 @@ function M.setup(opts)
   local conceal_group = vim.api.nvim_create_augroup("TWConceal", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter" }, {
     group = conceal_group,
-    pattern = "*.md", -- Pattern to match Markdown files
+    pattern = "*.neorg", -- Pattern to match Neorg files
     callback = function()
       -- Get the file type of the current buffer
       vim.opt.conceallevel = 2
@@ -654,7 +654,7 @@ function M.setup(opts)
   end, {})
   vim.api.nvim_create_user_command("TWSyncBulk", function()
     local start_line = vim.fn.line("'<") -- Get the start line of the selection
-    local end_line = vim.fn.line("'>") -- Get the end line of the selection
+    local end_line = vim.fn.line("'>")   -- Get the end line of the selection
     M.sync_tasks(start_line, end_line)
   end, { range = true })
   vim.api.nvim_create_user_command("TWUpdateCurrent", function()
@@ -716,7 +716,6 @@ function M.setup(opts)
       print("No scratch window")
     end
   end, {})
-
 end
 
 return M
