@@ -9,11 +9,17 @@ parsers.get_parser_configs().markdown = {
     files = { 'src/parser.c', 'src/scanner.cc' },
   },
 }
+parsers.get_parser_configs().norg = {
+  install_info = {
+    url = 'https://github.com/nvim-neorg/tree-sitter-norg',
+    files = { 'src/parser.c', 'src/scanner.cc' },
+  },
+}
 local M = {}
 -- Define the function to extract tasks
 local function extract_tasks()
   local bufnr = vim.api.nvim_get_current_buf()
-  local parser = parsers.get_parser(bufnr, "markdown")
+  local parser = parsers.get_parser(bufnr, "norg")
 
   -- Parse the buffer
   parser:parse()
