@@ -1,5 +1,5 @@
 local M = {}
-M.checkbox_pattern = { lua = "([%-%*%+]) (%[([%sx~%>])%])", vim = "([\\-\\*\\+]) (\\[([\\sx~>])\\])" }
+M.checkbox_pattern = { lua = "((%-%*%+)) (%[((%sx~%>))%])", vim = "((\\-\\*\\+)) (\\[((\\sx~>))\\])" }
 M.id_pattern = { vim = "(\\$id{([0-9a-fA-F\\-]\\+)})", lua = "(%$id@([0-9a-fA-F$-]+)@)" }
 M.task_pattern = {
   lua = M.checkbox_pattern.lua .. " (.*) " .. M.id_pattern.lua,
