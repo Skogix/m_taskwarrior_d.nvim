@@ -1,10 +1,10 @@
 local M = {}
-M.checkbox_pattern = { lua = "([%-%*%+]) (%(([%sx~%>])%))", vim = "([\\-\\*\\+]) (\\(([\\sx~>])\\))" }
-M.id_pattern = { vim = "(\\$id{([0-9a-fA-F\\-]\\+)})", lua = "(%$id@([0-9a-fA-F$-]+)@)" }
-M.task_pattern = {
-  lua = M.checkbox_pattern.lua .. " (.*) " .. M.id_pattern.lua,
-  vim = M.checkbox_pattern.vim .. " (.*) " .. M.id_pattern.vim,
-}
+-- M.checkbox_pattern = { lua = "([%-%*%+]) (%(([%sx~%>])%))", vim = "([\\-\\*\\+]) (\\(([\\sx~>])\\))" }
+-- M.id_pattern = { vim = "(\\$id{([0-9a-fA-F\\-]\\+)})", lua = "(%$id@([0-9a-fA-F$-]+)@)" }
+-- M.task_pattern = {
+--   lua = M.checkbox_pattern.lua .. " (.*) " .. M.id_pattern.lua,
+--   vim = M.checkbox_pattern.vim .. " (.*) " .. M.id_pattern.vim,
+-- }
 
 function M.convert_timestamp_utc_local(timestamp_utc)
   local year = tonumber(string.sub(timestamp_utc, 1, 4))

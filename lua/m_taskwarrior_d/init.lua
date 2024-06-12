@@ -603,8 +603,8 @@ local function process_opts(opts)
   end
   local status_pattern = M.utils.encode_patterns(table.concat(M._config.task_statuses, ""))
   M._config["status_pattern"] = {
-    lua = "(%[([" .. status_pattern.lua .. "])%])",
-    vim = "(\\[([" .. status_pattern.vim .. "])\\])",
+    lua = "(%(([" .. status_pattern.lua .. "])%))",
+    vim = "(\\(([" .. status_pattern.vim .. "])\\))",
   }
   M._config["checkbox_pattern"] = {
     lua = "(" .. M._config.list_pattern.lua .. ") " .. M._config["status_pattern"].lua,
@@ -619,8 +619,10 @@ local function process_opts(opts)
     vim = M._config.checkbox_pattern.vim .. " (.*) " .. M._config.id_part_pattern.vim,
   }
   M._config["task_query_pattern"] = {
-    vim = "(\\$query{([^\\|]*)|*([^}]\\*)})",
-    lua = "(%$query{([^%|]*)|*([^}]*)})",
+    -- vim = "(\\$query{([^\\|]*)|*([^}]\\*)})",
+    -- lua = "(%$query{([^%|]*)|*([^}]*)})",
+    lua = "(%$query{((^%|)*)|*((^})*)})",
+    vim = "(\\$query{((^\\|)*)|*((^})\\*)})"
   }
 end
 
@@ -651,7 +653,7 @@ function M.setup(opts)
       -- Get the file type of the current buffer
       vim.opt.conceallevel = 2
       M._concealTaskId = vim.fn.matchadd("Conceal", "\\(\\$id{\\([0-9a-fA-F\\-]\\+\\)}\\)", 0, -1, { conceal = "" })
-      M._concealTaskQuery = vim.fn.matchadd("Conceal", "\\$query{[^\\}]\\+}", 0, -1, { conceal = "󰡦" })
+      M._concealTaskQuery = vim.fn.matchadd("Conceal", "\\$query{(^\\})\\+}", 0, -1, { conceal = "󰡦" })
       vim.api.nvim_exec([[hi Conceal ctermfg=109 guifg=#83a598 ctermbg=NONE guibg=NONE]], false)
     end,
   })
