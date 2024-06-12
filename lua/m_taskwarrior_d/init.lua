@@ -645,7 +645,6 @@ function M.setup(opts)
   M.task.set_config(M._config)
   M.ui.set_config(M._config)
   local conceal_group = vim.api.nvim_create_augroup("TWConceal", { clear = true })
-  vim.print(vim.inspect(M._config))
   vim.api.nvim_create_autocmd({ "BufEnter" }, {
     group = conceal_group,
     pattern = "*.norg", -- Pattern to match Markdown files
