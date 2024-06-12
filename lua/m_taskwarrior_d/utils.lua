@@ -1,5 +1,5 @@
 local M = {}
-M.checkbox_pattern = { lua = "((%-%*%+)) (%[((%sx~%>))%])", vim = "((\\-\\*\\+)) (\\[((\\sx~>))\\])" }
+M.checkbox_pattern = { lua = "([%-%*%+]) (%[([%sx~%>])%])", vim = "([\\-\\*\\+]) (\\[([\\sx~>])\\])" }
 M.id_pattern = { vim = "(\\$id{([0-9a-fA-F\\-]\\+)})", lua = "(%$id@([0-9a-fA-F$-]+)@)" }
 M.task_pattern = {
   lua = M.checkbox_pattern.lua .. " (.*) " .. M.id_pattern.lua,
@@ -351,7 +351,7 @@ end
 
 function M.render_tasks(tasks, depth)
   depth = depth or 0
-  local norg = {}
+  local markdown = {}
   for _, task in ipairs(tasks) do
     local active = false
     if task.status == "pending" and task["start"] ~= nil then
@@ -364,7 +364,7 @@ function M.render_tasks(tasks, depth)
       new_task_status_sym = ">"
     end
     table.insert(
-      norg,
+      markdown,
       string.rep(" ", vim.opt_local.shiftwidth._value * depth)
       .. "- ("
       .. new_task_status_sym
@@ -377,11 +377,11 @@ function M.render_tasks(tasks, depth)
     if task[1] then
       local nested_tasks = M.render_tasks(task, depth + 1)
       for _, nested_task in ipairs(nested_tasks) do
-        table.insert(norg, nested_task)
+        table.insert(markdown, nested_task)
       end
     end
   end
-  return norg
+  return markdown
 end
 
 function M.apply_context_data(line, line_number)

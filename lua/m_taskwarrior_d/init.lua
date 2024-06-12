@@ -9,7 +9,7 @@ M._config = {
   task_statuses = { " ", ">", "x", "~" },
   status_map = { [" "] = "pending", [">"] = "active", ["x"] = "completed", ["~"] = "deleted" },
   id_pattern = { vim = "\\x*-\\x*-\\x*-\\x*-\\x*", lua = "%x*-%x*-%x*-%x*-%x*" },
-  list_pattern = { lua = "(%-%*%+)", vim = "(\\-\\*\\+)" },
+  list_pattern = { lua = "[%-%*%+]", vim = "[\\-\\*\\+]" },
   task_whitelist_path = {},
   view_task_config = { total_width = 62, head_width = 15 },
   task_view_fields_order = { "project", "description", "urgency", "status", "tags", "annotations" },
@@ -631,7 +631,7 @@ function M.setup(opts)
   local conceal_group = vim.api.nvim_create_augroup("TWConceal", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter" }, {
     group = conceal_group,
-    pattern = "*.neorg", -- Pattern to match Neorg files
+    pattern = "*.neorg", -- Pattern to match Markdown files
     callback = function()
       -- Get the file type of the current buffer
       vim.opt.conceallevel = 2
