@@ -17,27 +17,39 @@ M._config = {
 }
 
 function M.sync_tasks(start_position, end_position)
+  print("Start of M.sync_tasks function")
+
   if start_position == nil then
     start_position = 1
   end
   if end_position == nil then
     end_position = vim.api.nvim_buf_line_count(0)
   end
+
   local headers = {}
+
   -- Iterate through each line to get the number of leading spaces
   for line_number = start_position, end_position do
     local current_line, _ = M.utils.get_line(line_number)
+    print("Current line:", current_line)
+
     if string.match(current_line, M._config.checkbox_pattern.lua) then
-      print(M._config.checkbox_pattern.lua)
+      print("Checkbox pattern matched:", M._config.checkbox_pattern.lua)
       M.utils.sync_task(current_line, line_number)
     end
+
     if string.match(current_line, M._config.task_query_pattern.lua) then
+      print("Task query pattern matched")
       table.insert(headers, { line = current_line, line_number = line_number })
     end
   end
+
   for _, header in pairs(headers) do
+    print("Applying context data for line:", header.line_number)
     M.utils.apply_context_data(header.line, header.line_number)
   end
+
+  print("End of M.sync_tasks function")
 end
 
 function M.edit_task()
