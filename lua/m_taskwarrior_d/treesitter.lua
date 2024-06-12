@@ -19,7 +19,7 @@ local M = {}
 -- Define the function to extract tasks
 local function extract_tasks()
   local bufnr = vim.api.nvim_get_current_buf()
-  local parser = parsers.get_parser(bufnr, "norg")
+  local parser = parsers.get_parser(bufnr, "markdown")
 
   -- Parse the buffer
   parser:parse()
