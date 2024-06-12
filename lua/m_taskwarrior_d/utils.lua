@@ -240,24 +240,24 @@ function M.add_or_sync_task(line, replace_desc)
         if replace_desc then
           require("m_taskwarrior_d.task").modify_task(uuid, desc)
           result = string.rep(" ", spaces or 0)
-            .. list_sb
-            .. " ["
-            .. new_task_status_sym
-            .. "] "
-            .. M.trim(desc)
-            .. " $id{"
-            .. new_task.uuid
-            .. "}"
+              .. list_sb
+              .. " ["
+              .. new_task_status_sym
+              .. "] "
+              .. M.trim(desc)
+              .. " $id{"
+              .. new_task.uuid
+              .. "}"
         else
           result = string.rep(" ", spaces or 0)
-            .. list_sb
-            .. " ["
-            .. new_task_status_sym
-            .. "] "
-            .. new_task.description
-            .. " $id{"
-            .. new_task.uuid
-            .. "}"
+              .. list_sb
+              .. " ["
+              .. new_task_status_sym
+              .. "] "
+              .. new_task.description
+              .. " $id{"
+              .. new_task.uuid
+              .. "}"
         end
       else
         result = line
@@ -351,7 +351,7 @@ end
 
 function M.render_tasks(tasks, depth)
   depth = depth or 0
-  local markdown = {}
+  local norg = {}
   for _, task in ipairs(tasks) do
     local active = false
     if task.status == "pending" and task["start"] ~= nil then
@@ -364,24 +364,24 @@ function M.render_tasks(tasks, depth)
       new_task_status_sym = ">"
     end
     table.insert(
-      markdown,
+      norg,
       string.rep(" ", vim.opt_local.shiftwidth._value * depth)
-        .. "- ["
-        .. new_task_status_sym
-        .. "] "
-        .. task.desc
-        .. " $id{"
-        .. task.uuid
-        .. "}"
+      .. "- ("
+      .. new_task_status_sym
+      .. ") "
+      .. task.desc
+      .. " $id{"
+      .. task.uuid
+      .. "}"
     )
     if task[1] then
       local nested_tasks = M.render_tasks(task, depth + 1)
       for _, nested_task in ipairs(nested_tasks) do
-        table.insert(markdown, nested_task)
+        table.insert(norg, nested_task)
       end
     end
   end
-  return markdown
+  return norg
 end
 
 function M.apply_context_data(line, line_number)
@@ -428,7 +428,7 @@ function M.delete_scoped_tasks(line_number)
   if #next_line == 0 or next_line == " " then
     start_line = next_line_number
   else
-    vim.api.nvim_buf_set_lines(0, line_number, line_number, false, {''})
+    vim.api.nvim_buf_set_lines(0, line_number, line_number, false, { '' })
     return
   end
   while end_line == nil and next_line_number < no_of_lines do
