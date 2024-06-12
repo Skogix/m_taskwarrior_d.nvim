@@ -28,6 +28,7 @@ function M.sync_tasks(start_position, end_position)
   for line_number = start_position, end_position do
     local current_line, _ = M.utils.get_line(line_number)
     if string.match(current_line, M._config.checkbox_pattern.lua) then
+      print(M._config.checkbox_pattern.lua)
       M.utils.sync_task(current_line, line_number)
     end
     if string.match(current_line, M._config.task_query_pattern.lua) then
