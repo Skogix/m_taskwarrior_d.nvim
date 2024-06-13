@@ -3,18 +3,18 @@ local ts = require 'nvim-treesitter'
 local parsers = require 'nvim-treesitter.parsers'
 
 -- Set up the parsers you want to use (including Markdown)
-parsers.get_parser_configs().markdown = {
-  install_info = {
-    url = 'https://github.com/tree-sitter/tree-sitter-markdown',
-    files = { 'src/parser.c', 'src/scanner.cc' },
-  },
-}
-parsers.get_parser_configs().norg = {
-  install_info = {
-    url = 'https://github.com/nvim-neorg/tree-sitter-norg',
-    files = { 'src/parser.c', 'src/scanner.cc' },
-  },
-}
+-- parsers.get_parser_configs().markdown = {
+--   install_info = {
+--     url = 'https://github.com/tree-sitter/tree-sitter-markdown',
+--     files = { 'src/parser.c', 'src/scanner.cc' },
+--   },
+-- }
+-- parsers.get_parser_configs().norg = {
+--   install_info = {
+--     url = 'https://github.com/nvim-neorg/tree-sitter-norg',
+--     files = { 'src/parser.c', 'src/scanner.cc' },
+--   },
+-- }
 local M = {}
 -- Define the function to extract tasks
 local function extract_tasks()

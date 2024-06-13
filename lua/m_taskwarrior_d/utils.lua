@@ -249,9 +249,9 @@ function M.add_or_sync_task(line, replace_desc)
           require("m_taskwarrior_d.task").modify_task(uuid, desc)
           result = string.rep(" ", spaces or 0)
               .. list_sb
-              .. " ["
+              .. " ("
               .. new_task_status_sym
-              .. "] "
+              .. ") "
               .. M.trim(desc)
               .. " $id{"
               .. new_task.uuid
@@ -259,9 +259,9 @@ function M.add_or_sync_task(line, replace_desc)
         else
           result = string.rep(" ", spaces or 0)
               .. list_sb
-              .. " ["
+              .. " ("
               .. new_task_status_sym
-              .. "] "
+              .. ") "
               .. new_task.description
               .. " $id{"
               .. new_task.uuid

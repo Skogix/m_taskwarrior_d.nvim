@@ -6,8 +6,17 @@ M.ui = require("m_taskwarrior_d.ui")
 M._concealTaskId = nil
 M.current_winid = nil
 M._config = {
-  task_statuses = { " ", ">", "x", "~" },
-  status_map = { [" "] = "pending", [">"] = "active", ["x"] = "completed", ["~"] = "deleted" },
+  task_statuses = { " ", "-", "x", "_", "=", "+" },
+  -- The following characters are reserved for the TODO status extension:
+  -- -- `| |`: undone (a literal space)
+  -- -- `x`: done
+  -- -- `?`: needs further input/clarification
+  -- -- `!`: urgent
+  -- -- `+`: recurring (with an optional {**** timestamp extension}[timestamp])
+  -- -- `-`: in-progress/pending
+  -- -- `=`: on hold
+  -- -- `_`: put down/cancelled
+  status_map = { [" "] = "pending", ["-"] = "active", ["x"] = "completed", ["_"] = "deleted", ["="] = "waiting", ["+"] = "recurring" },
   id_pattern = { vim = "\\x*-\\x*-\\x*-\\x*-\\x*", lua = "%x*-%x*-%x*-%x*-%x*" },
   list_pattern = { lua = "[%-%*%+]", vim = "[\\-\\*\\+]" },
   task_whitelist_path = {},
