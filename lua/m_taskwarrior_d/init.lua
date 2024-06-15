@@ -6,8 +6,17 @@ M.ui = require("m_taskwarrior_d.ui")
 M._concealTaskId = nil
 M.current_winid = nil
 M._config = {
-  task_statuses = { " ", ">", "x", "~" },
-  status_map = { [" "] = "pending", [">"] = "active", ["x"] = "completed", ["~"] = "deleted" },
+  task_statuses = { " ", "-", "x", "_", "=", "+" },
+  -- The following characters are reserved for the TODO status extension:
+  -- -- `| |`: undone (a literal space)
+  -- -- `x`: done
+  -- -- `?`: needs further input/clarification
+  -- -- `!`: urgent
+  -- -- `+`: recurring (with an optional {**** timestamp extension}[timestamp])
+  -- -- `-`: in-progress/pending
+  -- -- `=`: on hold
+  -- -- `_`: put down/cancelled
+  status_map = { [" "] = "pending", ["-"] = "active", ["x"] = "completed", ["_"] = "deleted", ["="] = "waiting", ["+"] = "recurring" },
   id_pattern = { vim = "\\x*-\\x*-\\x*-\\x*-\\x*", lua = "%x*-%x*-%x*-%x*-%x*" },
   list_pattern = { lua = "[%-%*%+]", vim = "[\\-\\*\\+]" },
   task_whitelist_path = {},
@@ -16,27 +25,41 @@ M._config = {
   close_floating_window = { "q", "<Esc>", "<C-c>" },
 }
 
+
 function M.sync_tasks(start_position, end_position)
+  print("Start of M.sync_tasks function")
+
   if start_position == nil then
     start_position = 1
   end
   if end_position == nil then
     end_position = vim.api.nvim_buf_line_count(0)
   end
+
   local headers = {}
+
   -- Iterate through each line to get the number of leading spaces
   for line_number = start_position, end_position do
     local current_line, _ = M.utils.get_line(line_number)
+    print("Current line:", current_line)
+
     if string.match(current_line, M._config.checkbox_pattern.lua) then
+      print("Checkbox pattern matched:", M._config.checkbox_pattern.lua)
       M.utils.sync_task(current_line, line_number)
     end
+
     if string.match(current_line, M._config.task_query_pattern.lua) then
+      print("Task query pattern matched")
       table.insert(headers, { line = current_line, line_number = line_number })
     end
   end
+
   for _, header in pairs(headers) do
+    print("Applying context data for line:", header.line_number)
     M.utils.apply_context_data(header.line, header.line_number)
   end
+
+  print("End of M.sync_tasks function")
 end
 
 function M.edit_task()
@@ -589,8 +612,8 @@ local function process_opts(opts)
   end
   local status_pattern = M.utils.encode_patterns(table.concat(M._config.task_statuses, ""))
   M._config["status_pattern"] = {
-    lua = "(%[([" .. status_pattern.lua .. "])%])",
-    vim = "(\\[([" .. status_pattern.vim .. "])\\])",
+    lua = "(%(([" .. status_pattern.lua .. "])%))",
+    vim = "(\\(([" .. status_pattern.vim .. "])\\))",
   }
   M._config["checkbox_pattern"] = {
     lua = "(" .. M._config.list_pattern.lua .. ") " .. M._config["status_pattern"].lua,
@@ -605,8 +628,10 @@ local function process_opts(opts)
     vim = M._config.checkbox_pattern.vim .. " (.*) " .. M._config.id_part_pattern.vim,
   }
   M._config["task_query_pattern"] = {
-    vim = "(\\$query{([^\\|]*)|*([^}]\\*)})",
-    lua = "(%$query{([^%|]*)|*([^}]*)})",
+    -- vim = "(\\$query{([^\\|]*)|*([^}]\\*)})",
+    -- lua = "(%$query{([^%|]*)|*([^}]*)})",
+    lua = "(%$query{((^%|)*)|*((^})*)})",
+    vim = "(\\$query{((^\\|)*)|*((^})\\*)})"
   }
 end
 
@@ -631,12 +656,12 @@ function M.setup(opts)
   local conceal_group = vim.api.nvim_create_augroup("TWConceal", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter" }, {
     group = conceal_group,
-    pattern = "*.neorg", -- Pattern to match Neorg files
+    pattern = "*.norg", -- Pattern to match Markdown files
     callback = function()
       -- Get the file type of the current buffer
       vim.opt.conceallevel = 2
       M._concealTaskId = vim.fn.matchadd("Conceal", "\\(\\$id{\\([0-9a-fA-F\\-]\\+\\)}\\)", 0, -1, { conceal = "" })
-      M._concealTaskQuery = vim.fn.matchadd("Conceal", "\\$query{[^\\}]\\+}", 0, -1, { conceal = "󰡦" })
+      M._concealTaskQuery = vim.fn.matchadd("Conceal", "\\$query{(^\\})\\+}", 0, -1, { conceal = "󰡦" })
       vim.api.nvim_exec([[hi Conceal ctermfg=109 guifg=#83a598 ctermbg=NONE guibg=NONE]], false)
     end,
   })

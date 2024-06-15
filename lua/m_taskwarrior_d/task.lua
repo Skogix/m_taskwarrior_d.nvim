@@ -5,6 +5,7 @@ function M.set_config(opts)
     M[k] = v
   end
 end
+
 -- Function to execute Taskwarrior command
 function M.execute_taskwarrior_command(command, return_data, print_output)
   if not return_data or return_data == nil then
@@ -44,6 +45,7 @@ function M.get_task_by(task_id, return_data)
     return nil
   end
 end
+
 -- Function to add a task
 function M.add_task(description)
   description = require("m_taskwarrior_d.utils").trim(description)

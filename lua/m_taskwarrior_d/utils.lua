@@ -1,10 +1,10 @@
 local M = {}
-M.checkbox_pattern = { lua = "([%-%*%+]) (%[([%sx~%>])%])", vim = "([\\-\\*\\+]) (\\[([\\sx~>])\\])" }
-M.id_pattern = { vim = "(\\$id{([0-9a-fA-F\\-]\\+)})", lua = "(%$id@([0-9a-fA-F$-]+)@)" }
-M.task_pattern = {
-  lua = M.checkbox_pattern.lua .. " (.*) " .. M.id_pattern.lua,
-  vim = M.checkbox_pattern.vim .. " (.*) " .. M.id_pattern.vim,
-}
+-- M.checkbox_pattern = { lua = "([%-%*%+]) (%(([%sx~%>])%))", vim = "([\\-\\*\\+]) (\\(([\\sx~>])\\))" }
+-- M.id_pattern = { vim = "(\\$id{([0-9a-fA-F\\-]\\+)})", lua = "(%$id@([0-9a-fA-F$-]+)@)" }
+-- M.task_pattern = {
+--   lua = M.checkbox_pattern.lua .. " (.*) " .. M.id_pattern.lua,
+--   vim = M.checkbox_pattern.vim .. " (.*) " .. M.id_pattern.vim,
+-- }
 
 function M.convert_timestamp_utc_local(timestamp_utc)
   local year = tonumber(string.sub(timestamp_utc, 1, 4))
@@ -200,7 +200,7 @@ function M.toggle_task_status(current_line, line_number, new_status)
       new_status = M.task_statuses[status_index + 1]
     end
   end
-  local modified_line = string.gsub(current_line, M.status_pattern.lua, "[" .. new_status .. "]")
+  local modified_line = string.gsub(current_line, M.status_pattern.lua, "(" .. new_status .. ")")
   -- Set the modified line back to the buffer
 
   vim.api.nvim_buf_set_lines(0, line_number - 1, line_number, false, { modified_line })
@@ -208,7 +208,15 @@ function M.toggle_task_status(current_line, line_number, new_status)
 end
 
 function M.add_or_sync_task(line, replace_desc)
+  if not line then
+    error("Error: 'line' parameter is nil")
+  end
+
   local list_sb, _, status = string.match(line, M.checkbox_pattern.lua)
+  if not list_sb then
+    error("Error: Unable to match checkbox pattern in the line: " .. tostring(line))
+  end
+
   local desc = string.gsub(line, M.checkbox_pattern.lua, "")
   local result
   local _, uuid = string.match(line, M.id_part_pattern.lua)
@@ -241,9 +249,9 @@ function M.add_or_sync_task(line, replace_desc)
           require("m_taskwarrior_d.task").modify_task(uuid, desc)
           result = string.rep(" ", spaces or 0)
               .. list_sb
-              .. " ["
+              .. " ("
               .. new_task_status_sym
-              .. "] "
+              .. ") "
               .. M.trim(desc)
               .. " $id{"
               .. new_task.uuid
@@ -251,9 +259,9 @@ function M.add_or_sync_task(line, replace_desc)
         else
           result = string.rep(" ", spaces or 0)
               .. list_sb
-              .. " ["
+              .. " ("
               .. new_task_status_sym
-              .. "] "
+              .. ") "
               .. new_task.description
               .. " $id{"
               .. new_task.uuid
@@ -267,6 +275,67 @@ function M.add_or_sync_task(line, replace_desc)
   require("m_taskwarrior_d.task").modify_task_status(uuid, status)
   return result, uuid
 end
+
+-- function M.add_or_sync_task(line, replace_desc)
+-- local list_sb, _, status = string.match(line, M.checkbox_pattern.lua)
+-- local desc = string.gsub(line, M.checkbox_pattern.lua, "")
+-- local result
+-- local _, uuid = string.match(line, M.id_part_pattern.lua)
+-- if uuid == nil then
+--   uuid = require("m_taskwarrior_d.task").add_task(desc)
+--   result = line:gsub("%s+$", "") .. " $id{" .. uuid .. "}"
+-- else
+--   desc = string.gsub(desc, M.id_part_pattern.lua, "")
+--   if require("m_taskwarrior_d.task").get_task_by(uuid) == nil then
+--     line = string.gsub(line, M.id_part_pattern.lua, "")
+--     uuid = require("m_taskwarrior_d.task").add_task(desc)
+--     result = line:gsub("%s+$", "") .. " $id{" .. uuid .. "}"
+--   else
+--     local new_task = require("m_taskwarrior_d.task").get_task_by(uuid, "task")
+--     if new_task then
+--       local active = false
+--       if new_task.status == "pending" and new_task["start"] ~= nil then
+--         active = true
+--       end
+--       local new_task_status_sym
+--       if not active then
+--         new_task_status_sym, _ = findPair(M.status_map, nil, new_task.status)
+--       else
+--         new_task_status_sym = ">"
+--       end
+--       status = new_task_status_sym
+--       uuid = new_task.uuid
+--       local spaces = count_leading_spaces(line)
+--       if replace_desc then
+--         require("m_taskwarrior_d.task").modify_task(uuid, desc)
+--         result = string.rep(" ", spaces or 0)
+--             .. list_sb
+--             .. " ("
+--             .. new_task_status_sym
+--             .. ") "
+--             .. M.trim(desc)
+--             .. " $id{"
+--             .. new_task.uuid
+--             .. "}"
+--       else
+--         result = string.rep(" ", spaces or 0)
+--             .. list_sb
+--             .. " ("
+--             .. new_task_status_sym
+--             .. ") "
+--             .. new_task.description
+--             .. " $id{"
+--             .. new_task.uuid
+--             .. "}"
+--       end
+--     else
+--       result = line
+--     end
+--   end
+-- end
+-- require("m_taskwarrior_d.task").modify_task_status(uuid, status)
+-- return result, uuid
+-- end
 
 function M.extract_uuid(line)
   if line == nil then
@@ -351,7 +420,7 @@ end
 
 function M.render_tasks(tasks, depth)
   depth = depth or 0
-  local norg = {}
+  local markdown = {}
   for _, task in ipairs(tasks) do
     local active = false
     if task.status == "pending" and task["start"] ~= nil then
@@ -364,7 +433,7 @@ function M.render_tasks(tasks, depth)
       new_task_status_sym = ">"
     end
     table.insert(
-      norg,
+      markdown,
       string.rep(" ", vim.opt_local.shiftwidth._value * depth)
       .. "- ("
       .. new_task_status_sym
@@ -377,11 +446,11 @@ function M.render_tasks(tasks, depth)
     if task[1] then
       local nested_tasks = M.render_tasks(task, depth + 1)
       for _, nested_task in ipairs(nested_tasks) do
-        table.insert(norg, nested_task)
+        table.insert(markdown, nested_task)
       end
     end
   end
-  return norg
+  return markdown
 end
 
 function M.apply_context_data(line, line_number)

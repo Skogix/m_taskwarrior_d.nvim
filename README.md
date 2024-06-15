@@ -41,22 +41,22 @@ The goals of this plugin are:
 
 ## Features
 
-- [x] Injected and concealed Taskwarrior task
-- [x] Detect task (checkbox) in Markdown or similar files and register the task into Taskwarrior
-  - [x] Work with Markdown with ( - [ ])
-  - [ ] Docstring in Python
-  - [ ] JSDoc in JavaScript
-- [x] Bidirectionally manage the task
-- [>] Best effort to add contexts to the tasks:
-  - [ ] Use treesitter for better capturing contexts
-  - [x] Tags
-  - [x] Dependencies
-    - [x] Detect nested subtasks and update related tasks
-    - [x] Render dependencies with query view
-  - [x] Project
-- [x] View individual task on hover
-- [x] Edit task detail within Neovim (through nui.nvim)
-- [x] `Query View` similar to `dateview` in Obsidian or `Viewport` in Taskwiki
+- [x] Injected and concealed Taskwarrior task $id{1c47150d-4ba1-4857-bfdb-eed2fdd75280}
+- [x] Detect task (checkbox) in Markdown or similar files and register the task into Taskwarrior $id{df82db7f-44a1-4543-956d-b3c3cc41e887}
+  - [x] Work with Markdown with ( ) $id{2043fc2b-8da9-461f-b1ee-d50f09f33d4f}
+  - [ ] Docstring in Python $id{9796129f-583c-4715-a783-3dcf483c0a47}
+  - [ ] JSDoc in JavaScript $id{17a0ed97-aec0-4f0d-8374-24f26648d211}
+- [x] Bidirectionally manage the task $id{217bfc99-b86f-4de8-bd56-5423fb5a0ae7}
+- [>] Best effort to add contexts to the tasks: $id{3df6a4ed-1d5e-4d6f-a20a-1e5acca7c8b8}
+  - [ ] Use treesitter for better capturing contexts $id{cfea4a49-edba-42c5-8007-8ec320a26eee}
+  - [x] Tags $id{41adbf02-8caa-4068-b500-219de8e15fe6}
+  - [x] Dependencies $id{c14613b7-cb64-4685-a354-1cec016755f5}
+    - [x] Detect nested subtasks and update related tasks $id{311c47ff-e6db-4cbb-8d12-4adce963e416}
+    - [x] Render dependencies with query view $id{ddcb2b2a-e460-43ac-97b6-5a2507f242a2}
+  - [x] Project $id{73ead980-e61d-45c4-9da5-b1311639bcc8}
+- [x] View individual task on hover $id{9e1237ef-8b16-447c-ad57-d71924b32010}
+- [x] Edit task detail within Neovim (through nui.nvim) $id{07e26341-0ddd-4984-8820-02b1d327f9da}
+- [x] `Query View` similar to `dateview` in Obsidian or `Viewport` in Taskwiki $id{a571e877-afc0-4fd7-9925-8ce4a9ac8e3c}
 
 ## Maybe Feature
 
@@ -116,7 +116,7 @@ The goals of this plugin are:
     -- Be caution: it may be slow to open large files, because it scan the whole buffer
       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
         group = vim.api.nvim_create_augroup("TWTask", { clear = true }),
-        pattern = "*.md,*.markdown", -- Pattern to match Markdown files
+        pattern = "*.md,*.markdown,*.norg", -- Pattern to match Markdown files
         callback = function()
           vim.cmd('TWSyncTasks')
         end,
@@ -237,10 +237,10 @@ If you are using `obsidian.nvim`, you can use the following configuration:
 - Nested checkboxes are depended on the parent checkbox
 
 ```markdown
-- [ ] Task 1 # Has 1.1, 1.2, 1.2.1 as dependencies $id{d4452942-ac6e-46c6-b110-001ea731c676}
-  - [ ] Task 1.1 # Has none $id{53389315-5975-4db9-a796-1cd2514e1be1}
-  - [ ] Task 1.2 # Has 1.2.1 as dependency $id{ea843624-37c0-429c-89c6-19f661149668}
-    - [ ] Task 1.2.1 $id{792e57a6-ea55-4c9e-ab32-9e840d66088d}
+- [ ] Task 1 # Has 1.1, 1.2, 1.2.1 as dependencies $id{18e5f398-8a46-454e-8a75-562f44de04ce}
+  - [ ] Task 1.1 # Has none $id{6b299999-9627-46ca-b84b-6bc06bb7c1c9}
+  - [ ] Task 1.2 # Has 1.2.1 as dependency $id{dac98d9d-e311-46f5-8152-da91b8dae714}
+    - [ ] Task 1.2.1 $id{877d6b61-991c-4deb-bc91-0f6a07235cc6}
 ```
 
 ### QueryView
